@@ -1,4 +1,20 @@
 extends layout
 
 block content
-  p Form!
+  if errorMessages
+    each i in errorMessages
+      p= i
+  form(name='post' method='POST' action='/')
+    p Nafn
+    input(type='text', name='name' value='Dan')
+    p Email
+    input(type='text', name='email' value='test@hi.is')
+    P SSN
+    input(type='text', name='ssn' value='2222222222')
+    p Number
+    input(type='text', name='num' value='5')
+    p
+    button Senda
+  p
+  a(href='admin') Innskraning
+  
