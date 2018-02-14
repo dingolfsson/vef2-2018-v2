@@ -7,6 +7,7 @@ const passport = require('passport');
 const { Strategy } = require('passport-local');
 const form = require('./form');
 const admin = require('./admin');
+const users = require('./users')
 
 const app = express();
 
@@ -27,6 +28,69 @@ app.use(session({
 
 app.use('/', form);
 app.use('/login', admin);
+
+function strat(username, password, done) {
+  users
+    .findByUsername(username)
+    .then((user) => {
+      if (!user) {
+        return done(null, false);
+      }
+
+      return users.comparePasswords(password, user);
+    })
+    .then(res => done(null, res))
+    .catch((err) => {
+      done(err);
+    });
+}
+
+passport.use(new Strategy(strat));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  users
+    .findById(id)
+    .then(user => done(null, user))
+    .catch(err => done(err));
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use((req, res, next) => {
+  if (req.isAuthenticated()) {
+    // getum núna notað user í viewum
+    res.locals.user = req.user;
+  }
+
+  next();
+});
+
+app.get('/', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.send(`
+      <p>Innskráning sem ${req.user.username}</p>
+      <p><a href="/logout">Útskráning</a></p>
+      <p><a href="/admin">Skoða leyndarmál</a></p>
+    `);
+  }
+
+  return res.send(`
+    <p><a href="/login">Innskráning</a></p>
+  `);
+});
+
+function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  return res.redirect('/login');
+}
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
   res.status(404).render('error', { title: '404' });

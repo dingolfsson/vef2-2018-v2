@@ -4,68 +4,15 @@ const session = require('express-session');
 const passport = require('passport');
 const { Strategy } = require('passport-local');
 const users = require('./users');
-const app = express();
 
 const router = express.Router();
-const sessionSecret = 'leyndarmál';
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-function strat(username, password, done) {
-    users
-      .findByUsername(username)
-      .then((username) => {
-        if (!username) {
-          return done(null, false);
-        }
-  
-        return users.comparePasswords(password, username);
-      })
-      .then(res => done(null, res))
-      .catch((err) => {
-        done(err, 'villa');
-      })
-};
-
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-app.use(session({
-  secret: sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-}));
 
 async function login(req, res) {
     const data = {};
     return res.render('login', { data });
  }
 
- router.post('/', 
-  (req, res) => {
-    const {
-      username = '',
-      password = '',
-    } = req.body;
-    strat(username, password);
-    console.log(users.findByUsername(username))
-    console.log(username + ' ' + password);
-});
-
-passport.use(new Strategy(strat));
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-  
-passport.deserializeUser((id, done) => {
-    users
-    .findById(id)
-    .then(user => done(null, user))
-    .catch(err => done(err));
-});
-
-router.use((req, res, next) => {
+ router.use((req, res, next) => {
   if (req.isAuthenticated()) {
     // getum núna notað user í viewum
     res.locals.user = req.user;
@@ -74,23 +21,64 @@ router.use((req, res, next) => {
   next();
 });
 
-function ensureLoggedIn(req, res, next) {
-    
-    if (req.isAuthenticated()) {
-      return next();
-    }
-  
-    return res.redirect('/error');
+router.get('/login', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.send(`
+      <p>Innskráning sem ${req.user.username}</p>
+      <p><a href="/logout">Útskráning</a></p>
+      <p><a href="/admin">Skoða leyndarmál</a></p>
+    `);
   }
 
-  app.get('/login', (req, res) => {
-    
+  return res.send(`
+    <p><a href="/login">Innskráning</a></p>
+  `);
 });
 
-router.get('/', login);
+function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  return res.redirect('/login');
+}
+
+ function strat(username, password, done) {
+  users
+    .findByUsername(username)
+    .then((user) => {
+      if (!user) {
+        return done(null, false);
+      }
+
+      return users.comparePasswords(password, user);
+    })
+    .then(res => done(null, res))
+    .catch((err) => {
+      done(err);
+    });
+}
+
+passport.use(new Strategy(strat));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  users
+    .findById(id)
+    .then(user => done(null, user))
+    .catch(err => done(err));
+});
+
+router.use(passport.initialize());
+router.use(passport.session())
+
+router.get('/', login)
 
 router.post(
-    '/login',
+    '/',
     passport.authenticate('local', {
       failureRedirect: '/login',
     }),
@@ -103,11 +91,5 @@ router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 });
-
-router.get('/login', ensureLoggedIn, (req, res) => {
-    res.render('admin');
-});
-
-
 
 module.exports = router;
