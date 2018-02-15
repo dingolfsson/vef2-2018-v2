@@ -28,38 +28,7 @@ app.use(session({
 
 app.use('/', form);
 app.use('/login', admin);
-
-function strat(username, password, done) {
-  users
-    .findByUsername(username)
-    .then((user) => {
-      if (!user) {
-        return done(null, false);
-      }
-
-      return users.comparePasswords(password, user);
-    })
-    .then(res => done(null, res))
-    .catch((err) => {
-      done(err);
-    });
-}
-
-passport.use(new Strategy(strat));
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  users
-    .findById(id)
-    .then(user => done(null, user))
-    .catch(err => done(err));
-});
-
-app.use(passport.initialize());
-app.use(passport.session());
+//app.use('/admin', admin);
 
 app.use((req, res, next) => {
   if (req.isAuthenticated()) {
@@ -88,7 +57,7 @@ function ensureLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-
+  console.log('app ensure')
   return res.redirect('/login');
 }
 

@@ -4,13 +4,18 @@ const session = require('express-session');
 const passport = require('passport');
 const { Strategy } = require('passport-local');
 const users = require('./users');
+const client = require('pg')
 
 const router = express.Router();
 
 async function login(req, res) {
     const data = {};
     return res.render('login', { data });
- }
+}
+async function admin(req, res) {
+  const data = {};
+  return res.render('admin', { data });
+}
 
  router.use((req, res, next) => {
   if (req.isAuthenticated()) {
@@ -21,22 +26,9 @@ async function login(req, res) {
   next();
 });
 
-router.get('/login', (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.send(`
-      <p>Innskráning sem ${req.user.username}</p>
-      <p><a href="/logout">Útskráning</a></p>
-      <p><a href="/admin">Skoða leyndarmál</a></p>
-    `);
-  }
-
-  return res.send(`
-    <p><a href="/login">Innskráning</a></p>
-  `);
-});
-
 function ensureLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
+    console.log('ensureLogged')
     return next();
   }
 
@@ -76,6 +68,7 @@ router.use(passport.initialize());
 router.use(passport.session())
 
 router.get('/', login)
+router.get('/admin', admin)
 
 router.post(
     '/',
@@ -83,9 +76,21 @@ router.post(
       failureRedirect: '/login',
     }),
     (req, res) => {
-      res.redirect('/admin');
+      res.render('admin');
     },
 );
+
+router.get('/admin', (req, res) => {
+  console.log('admin /admin')
+  if (req.isAuthenticated()) {
+    console.log('get admin')
+    return res.send('hello');
+  }
+
+  return res.send(`
+    <p><a href="/login">Innskráning</a></p>
+  `);
+});
 
 router.get('/logout', (req, res) => {
     req.logout();
