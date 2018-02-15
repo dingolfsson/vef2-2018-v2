@@ -8,9 +8,17 @@ const client = require('pg')
 
 const router = express.Router();
 
+const sessionSecret = 'leyndarmál';
+
+router.use(session({
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+}));
+
 async function login(req, res) {
-    const data = {};
-    return res.render('login', { data });
+  const data = {};
+  return res.render('login', { data });
 }
 async function admin(req, res) {
   const data = {};
@@ -81,15 +89,12 @@ router.post(
 );
 
 router.get('/admin', (req, res) => {
-  console.log('admin /admin')
   if (req.isAuthenticated()) {
     console.log('get admin')
     return res.send('hello');
   }
 
-  return res.send(`
-    <p><a href="/login">Innskráning</a></p>
-  `);
+  return res.send(`ERROR`);
 });
 
 router.get('/logout', (req, res) => {

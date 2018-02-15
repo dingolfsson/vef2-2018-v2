@@ -20,46 +20,46 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(session({
-  secret: sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-}));
+// app.use(session({
+//   secret: sessionSecret,
+//   resave: false,
+//   saveUninitialized: false,
+// }));
 
 app.use('/', form);
-app.use('/login', admin);
-//app.use('/admin', admin);
+app.use('/login', admin)
+app.use('/admin', admin);
 
-app.use((req, res, next) => {
-  if (req.isAuthenticated()) {
-    // getum núna notað user í viewum
-    res.locals.user = req.user;
-  }
+// app.use((req, res, next) => {
+//   if (req.isAuthenticated()) {
+//     // getum núna notað user í viewum
+//     res.locals.user = req.user;
+//   }
 
-  next();
-});
+//   next();
+// });
 
-app.get('/', (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.send(`
-      <p>Innskráning sem ${req.user.username}</p>
-      <p><a href="/logout">Útskráning</a></p>
-      <p><a href="/admin">Skoða leyndarmál</a></p>
-    `);
-  }
+// app.get('/', (req, res) => {
+//   if (req.isAuthenticated()) {
+//     return res.send(`
+//       <p>Innskráning sem ${req.user.username}</p>
+//       <p><a href="/logout">Útskráning</a></p>
+//       <p><a href="/admin">Skoða leyndarmál</a></p>
+//     `);
+//   }
 
-  return res.send(`
-    <p><a href="/login">Innskráning</a></p>
-  `);
-});
+//   return res.send(`
+//     <p><a href="/login">Innskráning</a></p>
+//   `);
+// });
 
-function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  console.log('app ensure')
-  return res.redirect('/login');
-}
+// function ensureLoggedIn(req, res, next) {
+//   if (req.isAuthenticated()) {
+//     return next();
+//   }
+//   console.log('app ensure')
+//   return res.redirect('/login');
+// }
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
   res.status(404).render('error', { title: '404' });
