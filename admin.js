@@ -4,98 +4,42 @@ const session = require('express-session');
 const passport = require('passport');
 const { Strategy } = require('passport-local');
 const users = require('./users');
-const client = require('pg')
+const { Client } = require('pg');
+const xss = require('xss');
+//const connectionString = 'postgres://:@localhost/postgres';
 
 const router = express.Router();
 
-const sessionSecret = 'leyndarmál';
-
-router.use(session({
-  secret: sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-}));
-
-async function login(req, res) {
-  const data = {};
-  return res.render('login', { data });
-}
 async function admin(req, res) {
-  const data = {};
-  return res.render('admin', { data });
-}
-
- router.use((req, res, next) => {
-  if (req.isAuthenticated()) {
-    // getum núna notað user í viewum
-    res.locals.user = req.user;
-  }
-
-  next();
-});
-
-function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    console.log('ensureLogged')
-    return next();
-  }
-
-  return res.redirect('/login');
-}
-
- function strat(username, password, done) {
-  users
-    .findByUsername(username)
-    .then((user) => {
-      if (!user) {
-        return done(null, false);
-      }
-
-      return users.comparePasswords(password, user);
-    })
-    .then(res => done(null, res))
-    .catch((err) => {
-      done(err);
+  var data = [];
+  const client = new Client({
+    host: 'localhost',
+    user: 'postgres',
+    database: 'postgres',
+    password: 'postgres',
+  });
+  console.log('ttttt')
+  await client.connect();
+  try {
+    const data = await client.query({
+      rowMode: 'array',
+      text: 'SELECT * FROM postgres'
     });
+  } catch (err) {
+    console.error('Error selecting', err);
+  }
+  await client.end();
+  console.log(res)
+  return res.render('admin');
 }
 
-passport.use(new Strategy(strat));
+router.get('/', (req, res) => {
+  res.render('admin', {admin});
+})
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  users
-    .findById(id)
-    .then(user => done(null, user))
-    .catch(err => done(err));
-});
-
-router.use(passport.initialize());
-router.use(passport.session())
-
-router.get('/', login)
-router.get('/admin', admin)
-
-router.post(
-    '/',
-    passport.authenticate('local', {
-      failureRedirect: '/login',
-    }),
-    (req, res) => {
-      res.render('admin');
-    },
-);
-
-router.get('/admin', (req, res) => {
-  if (req.isAuthenticated()) {
-    console.log('get admin')
-    return res.send('hello');
-  }
-
-  return res.send(`ERROR`);
-});
+// router.post(
+//     '/', admin
+// );
 
 router.get('/logout', (req, res) => {
     req.logout();

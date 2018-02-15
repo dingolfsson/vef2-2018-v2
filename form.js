@@ -8,7 +8,6 @@ const connectionString = 'postgres://:@localhost/postgres';
 
 const router = express.Router();
 
-
 async function insert(name, email, ssn, num) {
   const client = new Client({
     connectionString,
@@ -18,7 +17,6 @@ async function insert(name, email, ssn, num) {
     const query = 'INSERT INTO results(name, email, ssn, num) VALUES($1, $2, $3, $4);';
     const values = [name, email, ssn, num];
     const res = await client.query(query, values);
-    console.log(res.rows);
   } catch (err) {
     console.error('Error selecting', err);
   }

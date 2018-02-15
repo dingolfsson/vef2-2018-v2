@@ -11,6 +11,8 @@ const users = require('./users')
 
 const app = express();
 
+//app.set('port', process.env.PORT || 3000)
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
@@ -20,46 +22,94 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-// app.use(session({
-//   secret: sessionSecret,
-//   resave: false,
-//   saveUninitialized: false,
-// }));
+app.use(session({
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+}));
 
 app.use('/', form);
-app.use('/login', admin)
-app.use('/admin', admin);
+//app.use('/admin', admin);
 
-// app.use((req, res, next) => {
-//   if (req.isAuthenticated()) {
-//     // getum núna notað user í viewum
-//     res.locals.user = req.user;
-//   }
+function strat(username, password, done) {
+  users
+    .findByUsername(username)
+    .then((user) => {
+      if (!user) {
+        return done(null, false);
+      }
 
-//   next();
-// });
+      return users.comparePasswords(password, user);
+    })
+    .then(res => done(null, res))
+    .catch((err) => {
+      done(err);
+    });
+}
 
-// app.get('/', (req, res) => {
-//   if (req.isAuthenticated()) {
-//     return res.send(`
-//       <p>Innskráning sem ${req.user.username}</p>
-//       <p><a href="/logout">Útskráning</a></p>
-//       <p><a href="/admin">Skoða leyndarmál</a></p>
-//     `);
-//   }
+passport.use(new Strategy(strat));
 
-//   return res.send(`
-//     <p><a href="/login">Innskráning</a></p>
-//   `);
-// });
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
 
-// function ensureLoggedIn(req, res, next) {
-//   if (req.isAuthenticated()) {
-//     return next();
-//   }
-//   console.log('app ensure')
-//   return res.redirect('/login');
-// }
+passport.deserializeUser((id, done) => {
+  users
+    .findById(id)
+    .then(user => done(null, user))
+    .catch(err => done(err));
+});
+
+app.use(passport.initialize());
+app.use(passport.session())
+
+app.use((req, res, next) => {
+  if (req.isAuthenticated()) {
+    // getum núna notað user í viewum
+    res.locals.user = req.user;
+  }
+
+  next();
+});
+
+async function login(req, res) {
+  const data = {};
+  return res.render('/login', { data });
+}
+
+app.get('/login', (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/admin');
+  }
+
+  return res.render('login', { login });
+});
+
+app.get('/admin', (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return app.use('/admin', admin)
+    return res.redirect('/admin');
+  }
+
+  return res.redirect('login');
+});
+
+app.post(
+  '/login',
+  passport.authenticate('local', {
+    failureRedirect: '/login',
+  }),
+  (req, res) => {
+    res.redirect('admin');
+  },
+);
+
+function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.redirect('/login');
+}
 
 function notFoundHandler(req, res, next) { // eslint-disable-line
   res.status(404).render('error', { title: '404' });
