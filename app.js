@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-
+const helmet = require('helmet')
 const passport = require('passport');
 const { Strategy } = require('passport-local');
 const form = require('./form');
@@ -12,15 +12,15 @@ const users = require('./users')
 const app = express();
 
 //app.set('port', process.env.PORT || 3000)
-
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 const sessionSecret = 'leyndarmál';
 
+app.use(helmet());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cookieParser());
+app.use(cookieParser(sessionSecret));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: sessionSecret,

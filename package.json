@@ -11,6 +11,7 @@
     "eslint": "^4.16.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
+    "papaparse": "^4.3.7",
     "stylelint": "^8.4.0",
     "stylelint-config-standard": "^18.0.0"
   },
@@ -20,11 +21,14 @@
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "express-validator": "^4.3.0",
+    "helmet": "^3.11.0",
+    "json2csv": "^3.11.5",
+    "nodemon": "^1.14.12",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "nodemon": "^1.14.12",
-    "pug": "^2.0.0-rc.4",
     "pg": "^7.4.1",
+    "pug": "^2.0.0-rc.4",
+    "tabletojson": "^0.7.1",
     "xss": "^0.3.7"
   }
 }

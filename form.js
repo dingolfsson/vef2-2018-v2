@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { check, validationResult } = require('express-validator/check');
 const { Client } = require('pg');
+const users = require('./users');
 const connectionString = 'postgres://:@localhost/postgres';
 const xss = require('xss');
 const router = express.Router();
