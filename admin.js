@@ -18,7 +18,7 @@ async function admin(req, res) {
     database: 'postgres',
     password: 'postgres',
   });
-  console.log('ttttt')
+  
   await client.connect();
   try {
     const data = await client.query({

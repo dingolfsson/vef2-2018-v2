@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 app.use('/', form);
-//app.use('/admin', admin);
+app.use('/admin', admin);
 
 function strat(username, password, done) {
   users
@@ -65,7 +65,6 @@ app.use(passport.session())
 
 app.use((req, res, next) => {
   if (req.isAuthenticated()) {
-    // getum núna notað user í viewum
     res.locals.user = req.user;
   }
 
@@ -85,22 +84,13 @@ app.get('/login', (req, res) => {
   return res.render('login', { login });
 });
 
-app.get('/admin', (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return app.use('/admin', admin)
-    return res.redirect('/admin');
-  }
-
-  return res.redirect('login');
-});
-
 app.post(
   '/login',
   passport.authenticate('local', {
     failureRedirect: '/login',
   }),
   (req, res) => {
-    res.redirect('admin');
+    res.redirect('/admin');
   },
 );
 
