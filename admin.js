@@ -7,6 +7,7 @@ const users = require('./users');
 const { Client } = require('pg');
 const xss = require('xss');
 const Papa = require('papaparse');
+const connectionString = process.env.DATABASE_URL || 'postgres://:@localhost/postgres';
 
 const router = express.Router();
 
@@ -18,12 +19,7 @@ function ensureLoggedIn(req, res, next) {
 }
 
 async function getData(req, res) {
-  const client = new Client({
-    host: 'localhost',
-    user: 'postgres',
-    database: 'postgres',
-    password: 'postgres',
-  });
+  const client = new Client({ connectionString });
   
   await client.connect();
   // try {
@@ -37,12 +33,7 @@ async function getData(req, res) {
 }
 
 async function getMoreData(res, req) {
-  const client = new Client({
-    host: 'localhost',
-    user: 'postgres',
-    database: 'postgres',
-    password: 'postgres',
-  });
+  const client = new Client({ connectionString });
   
   await client.connect();
   try {
