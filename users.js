@@ -33,7 +33,6 @@ exports.findById = id => new Promise((resolve) => {
   const found = records.find(u => u.id === id);
 
   if (found) {
-    console.log(resolve(found))
     return resolve(found);
   }
 

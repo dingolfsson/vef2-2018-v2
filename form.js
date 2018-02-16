@@ -39,9 +39,10 @@ async function form(req, res) {
 
 router.get('/', form);
 
-router.post('/',
+router.post(
+  '/',
   check('name').isLength({ min: 1 }).withMessage('Nafn má ekki vera tómt'),
-  check('email').isLength({ min: 1}).withMessage('Netfang má ekki vera tómt'),
+  check('email').isLength({ min: 1 }).withMessage('Netfang má ekki vera tómt'),
   check('email').isEmail().withMessage('Netfang verður að vera netfang'),
   check('ssn').isLength({ min: 1 }).withMessage('Kennitala má ekki vera tóm'),
   check('ssn').matches(/^[0-9]{6}-?[0-9]{4}$/).withMessage('Kennitala verður að vera á formi 000000-0000'),
@@ -54,21 +55,22 @@ router.post('/',
       ssn = '',
       num = '',
     } = req.body;
-    
+
     const errors = validationResult(req);
 
-    console.log(errors.isEmpty())
-  
+    console.info(errors.isEmpty());
+
     if (!errors.isEmpty()) {
       const errorMessages = errors.array().map(i => i.msg);
       return res.render('form', { errorMessages });
     }
     await insert(xss(name), xss(email), xss(ssn), xss(num));
     return res.redirect('/success');
-});
+  },
+);
 
 router.get('/success', (req, res) => {
   res.render('success');
-})
+});
 
 module.exports = router;

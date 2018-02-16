@@ -3,16 +3,15 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const helmet = require('helmet')
+const helmet = require('helmet');
 const passport = require('passport');
 const { Strategy } = require('passport-local');
 const form = require('./form');
 const admin = require('./admin');
-const users = require('./users')
+const users = require('./users');
 
 const app = express();
 
-//app.set('port', process.env.PORT || 3000)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
@@ -60,7 +59,7 @@ passport.deserializeUser((id, done) => {
 });
 
 app.use(passport.initialize());
-app.use(passport.session())
+app.use(passport.session());
 
 app.use('/', form);
 app.use('/admin', admin);
@@ -93,8 +92,8 @@ app.post(
 );
 
 app.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
+  req.logout();
+  res.redirect('/');
 });
 
 function ensureLoggedIn(req, res, next) {

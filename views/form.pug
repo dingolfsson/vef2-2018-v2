@@ -9,21 +9,21 @@ block content
   form(name='post' method='POST' action='/')
     p Nafn
     input(type='text', name='name' value='')
-    p Email
+    p Netfang
     input(type='text', name='email' value='')
-    P SSN
+    P Kenntala
     input(type='text', name='ssn' value='')
-    p Number
+    p Númer
     input(type='text', name='num' value='')
     p
     button Senda
   p
   if loggedIn
-    p Innskradur sem: 
+    p Innskráður sem: {user}
     p
-    a(href='logout') Utskra 
+    a(href='logout') Útskrá 
     p
-    a(href='admin') Stjornsida
+    a(href='admin') Stjórnsíða
   else
-    a(href='login') Innskraning
+    a(href='login') Innskráning
   
