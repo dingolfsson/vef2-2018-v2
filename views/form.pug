@@ -2,8 +2,10 @@ extends layout
 
 block content
   if errorMessages
-    each i in errorMessages
-      p= i
+    ul Villur
+      each val in errorMessages
+        li= val
+  p
   form(name='post' method='POST' action='/')
     p Nafn
     input(type='text', name='name' value='Dan')
@@ -16,5 +18,12 @@ block content
     p
     button Senda
   p
-  a(href='login') Innskraning
+  if loggedIn
+    p Innskradur sem: 
+    p
+    a(href='logout') Utskra 
+    p
+    a(href='admin') Stjornsida
+  else
+    a(href='login') Innskraning
   

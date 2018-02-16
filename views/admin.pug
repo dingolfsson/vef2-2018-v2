@@ -2,17 +2,31 @@ extends layout
 
 block content
   if errorMessages
-    each i in errorMessages
-      p= i
-  form(name='get' method='get' action='/display')
-    table#desc
-      th ID
-      th Dagsetning
-      th Nafn
-      th Kennitala
-      th Netfang
-      th Fjoldi
+    ul
+      each i in errorMessages
+        li= i
+  table
+    thead
+      tr
+        td ID
+        td Dagsetning
+        td Nafn
+        td Kennitala
+        td Netfang
+        td Fjoldi
+    tbody
+      each i in bdata
+        tr
+          td= i.id
+          td= i.date
+          td= i.name
+          td= i.ssn
+          td= i.email
+          td= i.num
   p
-  a(href='../') Innskraning
+  a(href='logout') Utskra
+
+  p
+  a(href='../') Forsida
   p
   a(href='logout')

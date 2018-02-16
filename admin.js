@@ -10,8 +10,14 @@ const xss = require('xss');
 
 const router = express.Router();
 
-async function admin(req, res) {
-  var data = [];
+function ensureLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.redirect('/login');
+}
+
+async function getData(req, res) {
   const client = new Client({
     host: 'localhost',
     user: 'postgres',
@@ -20,26 +26,30 @@ async function admin(req, res) {
   });
   
   await client.connect();
-  try {
-    const data = await client.query({
-      rowMode: 'array',
-      text: 'SELECT * FROM postgres'
-    });
-  } catch (err) {
-    console.error('Error selecting', err);
-  }
+  // try {
+    const data = await client.query('SELECT id, date, name, email, ssn, num FROM results');
+    const bdata = data.rows;
+  // } catch (err) {
+  //   console.error('Error selecting', err);
+  // }
   await client.end();
-  console.log(res)
-  return res.render('admin');
+  console.log(bdata);
+  return res.render('admin', { bdata });
 }
 
-router.get('/', (req, res) => {
-  res.render('admin', {admin});
-})
+// async function select() {
+//   await client.connect();
+//   try {
+//     const res = await Client.query('SELECT * FROM texts');
+//     console.log(res.rows);
+//   } catch (e) {
+//     console.error('Error selecting', e);
+//   }
 
-// router.post(
-//     '/', admin
-// );
+//   await Client.end();
+// }
+
+router.get('/', ensureLoggedIn, getData)
 
 router.get('/logout', (req, res) => {
     req.logout();

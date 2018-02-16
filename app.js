@@ -28,8 +28,6 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-app.use('/', form);
-app.use('/admin', admin);
 
 function strat(username, password, done) {
   users
@@ -63,6 +61,9 @@ passport.deserializeUser((id, done) => {
 app.use(passport.initialize());
 app.use(passport.session())
 
+app.use('/', form);
+app.use('/admin', admin);
+
 app.use((req, res, next) => {
   if (req.isAuthenticated()) {
     res.locals.user = req.user;
@@ -71,17 +72,13 @@ app.use((req, res, next) => {
   next();
 });
 
-async function login(req, res) {
-  const data = {};
-  return res.render('/login', { data });
-}
 
 app.get('/login', (req, res) => {
   if (req.isAuthenticated()) {
     return res.redirect('/admin');
   }
-
-  return res.render('login', { login });
+  const data = {};
+  return res.render('login', { data });
 });
 
 app.post(
@@ -93,6 +90,11 @@ app.post(
     res.redirect('/admin');
   },
 );
+
+app.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+});
 
 function ensureLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
