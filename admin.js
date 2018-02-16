@@ -6,10 +6,7 @@ const { Strategy } = require('passport-local');
 const users = require('./users');
 const { Client } = require('pg');
 const xss = require('xss');
-const Papa = require('papaparse')
-const json2csv = require('json2csv');
-var tabletojson = require('tabletojson');
-//const connectionString = 'postgres://:@localhost/postgres';
+const Papa = require('papaparse');
 
 const router = express.Router();
 
