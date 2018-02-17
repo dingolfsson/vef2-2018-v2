@@ -55,7 +55,8 @@ label {
 
 input, button {
   font-size: 1.3em;
-  width: 270px;
+  width: 260px;
+  margin: 5px 5px;
 }
 
 ul, li {
