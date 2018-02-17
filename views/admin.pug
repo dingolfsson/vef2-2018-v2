@@ -1,34 +1,26 @@
 extends layout
 
 block content
-  if errorMessages
-    ul
-      each i in errorMessages
-        li= i
-  table
-    thead
-      tr
-        td Id
-        td Dagsetning
-        td Nafn
-        td Kennitala
-        td Netfang
-        td Fjöldi
-    tbody
-      each i in bdata
-        tr
-          td= i.id
-          td= i.date
-          td= i.name
-          td= i.ssn
-          td= i.email
-          td= i.num
-  p
-  a(href='/admin/download') Sækja
-  p
-  a(href='logout') Útskrá
-
-  p
-  a(href='../') Forsíða
-  p
-  a(href='logout')
+  div.grandParentContaniner
+    div.parentContainer
+      table.center
+        thead
+          tr
+            td Id
+            td Dagsetning
+            td Nafn
+            td Kennitala
+            td Netfang
+            td Fjöldi
+        tbody
+          each i in data
+            tr
+              td= i.id
+              td= i.date
+              td= i.name
+              td= i.ssn
+              td= i.email
+              td= i.num
+      a(href='/admin/download') Sækja
+      p
+      a(href='/') Forsíða

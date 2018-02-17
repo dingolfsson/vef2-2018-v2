@@ -1,29 +1,28 @@
 extends layout
 
 block content
-  if errorMessages
-    ul Villur
-      each val in errorMessages
-        li= val
-  p
-  form(name='post' method='POST' action='/')
-    p Nafn
-    input(type='text', name='name' value='')
-    p Netfang
-    input(type='text', name='email' value='')
-    P Kenntala
-    input(type='text', name='ssn' value='')
-    p Númer
-    input(type='text', name='num' value='')
-    p
-    button Senda
-  p
-  if loggedIn
-    p Innskráður sem: {user}
-    p
-    a(href='logout') Útskrá 
-    p
-    a(href='admin') Stjórnsíða
-  else
-    a(href='login') Innskráning
-  
+  div.grandParentContaniner
+    div.parentContainer
+      if errorMessages
+        ul Villur
+          each val in errorMessages
+            li= val
+      form(id='loginForm' name='post' method='POST' action='/')
+        label(for='fn') Nafn
+        input(type='text', id='fn' name='name' value=name, placeholder='Jon Jonsson')
+        label(for='ln') Netfang
+        input(type='text', id='ln', name='email' value=email, placeholder='jon@kjarni.org')
+        label(for='kt') Kenntala
+        input(type='text', id='kt' name='ssn' value=ssn, placeholder='123456-7890')
+        label(for='no') Númer
+        input(type='text', id='no' name='num' value=num, placeholder='42')
+        button Senda
+      
+      if loggedIn
+        p Innskráður sem: #{usr}
+        p
+        a(href='logout') Útskrá 
+        p
+        a(href='admin') Stjórnsíða
+      else
+        a(href='login') Innskrá

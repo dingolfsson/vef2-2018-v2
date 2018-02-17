@@ -27,7 +27,6 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-
 function strat(username, password, done) {
   users
     .findByUsername(username)
@@ -67,7 +66,6 @@ app.use((req, res, next) => {
   if (req.isAuthenticated()) {
     res.locals.user = req.user;
   }
-
   next();
 });
 
@@ -77,7 +75,7 @@ app.get('/login', (req, res) => {
     return res.redirect('/admin');
   }
   const data = {};
-  return res.render('login', { data });
+  return res.render('login', { data, title: 'Innskraning' });
 });
 
 app.post(
@@ -95,13 +93,6 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-function ensureLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  return res.redirect('/login');
-}
-
 function notFoundHandler(req, res, next) { // eslint-disable-line
   res.status(404).render('error', { title: '404' });
 }
@@ -110,6 +101,9 @@ function errorHandler(err, req, res, next) { // eslint-disable-line
   console.error(err);
   res.status(500).render('error', { err });
 }
+
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const hostname = '127.0.0.1';
 const port = process.env.PORT || 3000;

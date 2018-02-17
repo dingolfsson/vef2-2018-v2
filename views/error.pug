@@ -1,5 +1,9 @@
-p Villa
+extends layout
 
-if err && err.message
-  p=err.message
-  pre #{err.stack}
+block content
+  h1 oh noes!
+  p Þessi síða er ekki til!
+
+  if err && err.message
+    p=err.message
+    pre #{err.stack}

@@ -5,7 +5,7 @@ const path = require('path');
 const { check, validationResult } = require('express-validator/check');
 const { Client } = require('pg');
 const users = require('./users');
-const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost/results';
+const connectionString = process.env.DATABASE_URL || 'postgres://:@localhost/postgres';
 const xss = require('xss');
 const router = express.Router();
 
@@ -32,9 +32,17 @@ async function insert(name, email, ssn, num) {
 }
 
 async function form(req, res) {
+  // const loggedIn = await users.findByUsername('admin').then((b) => {
+  //   if (b) return Object.entries(b)[3][1];
+  //   return 'error';
+  // });
+  const usr = await users.findByUsername('admin').then((b) => {
+    if (b) return Object.entries(b)[3][1];
+    return 'bab';
+  });
   const loggedIn = req.isAuthenticated();
   const data = {};
-  return res.render('form', { data, loggedIn });
+  return res.render('form', { data, loggedIn, usr });
 }
 
 router.get('/', form);
@@ -58,11 +66,15 @@ router.post(
 
     const errors = validationResult(req);
 
-    console.info(errors.isEmpty());
-
     if (!errors.isEmpty()) {
       const errorMessages = errors.array().map(i => i.msg);
-      return res.render('form', { errorMessages });
+      return res.render('form', {
+        errorMessages,
+        name,
+        email,
+        ssn,
+        num,
+      });
     }
     await insert(xss(name), xss(email), xss(ssn), xss(num));
     return res.redirect('/success');

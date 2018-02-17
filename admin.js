@@ -1,14 +1,8 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const passport = require('passport');
-const { Strategy } = require('passport-local');
-const users = require('./users');
 const { Client } = require('pg');
-const xss = require('xss');
 const Papa = require('papaparse');
 
-const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost/results';
+const connectionString = process.env.DATABASE_URL || 'postgres://:@localhost/postgres';
 
 const router = express.Router();
 
@@ -19,39 +13,37 @@ function ensureLoggedIn(req, res, next) {
   return res.redirect('/login');
 }
 
-async function getData(req, res) {
+async function getData() {
   const client = new Client({ connectionString });
-
-  await client.connect();
-  const data = await client.query('SELECT id, date, name, email, ssn, num FROM results');
-  const bdata = data.rows;
-  await client.end();
-  return res.render('admin', { bdata });
-}
-
-async function getMoreData(res, req) {
-  const client = new Client({ connectionString });
-  await client.connect();
   try {
+    await client.connect();
     const data = await client.query('SELECT id, date, name, email, ssn, num FROM results');
-    const testt = await Papa.unparse(data.rows, {
-      delimiter: ';',
-    });
-    return testt;
+    await client.end();
+    return data.rows;
   } catch (err) {
     console.info(err);
   }
-  await client.end();
-  return 'NO DATA';
+  return 'ERROR';
 }
 
-
-router.get('/', ensureLoggedIn, getData);
+router.get('/', ensureLoggedIn, async (req, res) => {
+  const data = await getData();
+  res.render('admin', { data });
+});
 
 router.get('/download', ensureLoggedIn, async (req, res) => {
-  const filename = 'data.csv';
-  res.set('Content-Disposition', `attachment; filename="${filename}"`);
-  res.send(await getMoreData());
+  const tmp = await getData();
+  try {
+    const data = Papa.unparse(tmp, {
+      delimiter: ';',
+    });
+    const filename = 'data.csv';
+    res.set('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(data);
+  } catch (err) {
+    console.info(err);
+    res.send('error');
+  }
 });
 
 router.get('/logout', (req, res) => {

@@ -1,16 +1,16 @@
 extends layout
 
 block content
-  if errorMessages
-    each i in errorMessages
-      p= i
-  form(name='post' method='POST' action='/login')
-    p Notendanafn
-    input(type='text', name='username' value='')
-    p Lykilord
-    input(type='password', name='password' value='')
-    P 
-    button Innskra
-  p
-  a(href='../') Forsida
-  
+  div.grandParentContaniner
+    div.parentContainer
+      if errorMessages
+        ul Villur
+          each val in errorMessages
+            li= val
+      form(id='loginForm', name='post' method='POST' action='/login')
+        label(for='adminlogin') Notendanafn
+        input(type='text', id='adminlogin' name='username' value='')
+        label(for='passwd') Lykilord
+        input(type='password', id='passwd', name='password' value='')
+        button Senda
+      a(href='/') Forsíða

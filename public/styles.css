@@ -3,48 +3,75 @@
   padding: 0;
 }
 
-html {
-  box-sizing: border-box;
-}
-
 *,
 *::before,
 *::after {
   box-sizing: inherit;
 }
 
-body {
+html, body {
+  height: 100%;
   font-family: Georgia, serif;
   font-size: 16px;
   background-color: #eee;
   color: #333;
-  width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
+}
+
+table.center {
+  width:100%;
+}
+
+.grandParentContaniner{
+  display: table;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.parentContainer{
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.parentContainer #loginForm{
+  padding:20px; 
+  background: #fff;
+  border: 1px solid #ddd;
+  width:400px;
+}
+
+.parentContainer #results{
+  padding:20px; 
+  background: #fff;
+  border: 1px solid #ddd;
+  width:800px;
+}
+
+label {
+  display: inline-block;
+  font-size: 1.3em;
+  width: 125px;
+}
+
+input, button {
+  font-size: 1.3em;
+  width: 270px;
 }
 
 ul, li {
   list-style-type: circle
 }
 
+thead {
+  background-color: rgb(161, 158, 158);
+  text-align: left;
+  font-size: 1em;
+  padding: 10px 10px;
+  font-weight: bold;
+}
+
 table, thead, tbody th, td {
   border: 1px solid black;
   border-collapse: collapse;
-  padding: 2px 4px;
-}
-
-th {
-  background-color: darkslategray;
-  text-align: left;
-  font-size: 1.1em;
-  padding: 10px 10px;
-
-}
-
-.header {
-  display: flex;
-
-  margin-bottom: 30px;
-  min-height: 300px;
-
+  padding: 2px 2px;
 }
