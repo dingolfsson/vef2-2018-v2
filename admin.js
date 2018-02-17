@@ -8,7 +8,7 @@ const { Client } = require('pg');
 const xss = require('xss');
 const Papa = require('papaparse');
 
-const connectionString = process.env.DATABASE_URL || 'postgres://:@localhost/postgres';
+const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost/results';
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ async function getData(req, res) {
   const client = new Client({ connectionString });
 
   await client.connect();
-  const data = await client.query('SELECT id, date, name, email, ssn, num FROM results;');
+  const data = await client.query('SELECT id, date, name, email, ssn, num FROM results');
   const bdata = data.rows;
   await client.end();
   return res.render('admin', { bdata });
@@ -33,7 +33,7 @@ async function getMoreData(res, req) {
   const client = new Client({ connectionString });
   await client.connect();
   try {
-    const data = await client.query('SELECT id, date, name, email, ssn, num FROM results;');
+    const data = await client.query('SELECT id, date, name, email, ssn, num FROM results');
     const testt = await Papa.unparse(data.rows, {
       delimiter: ';',
     });
@@ -48,7 +48,7 @@ async function getMoreData(res, req) {
 
 router.get('/', ensureLoggedIn, getData);
 
-router.get('/download', async (req, res) => {
+router.get('/download', ensureLoggedIn, async (req, res) => {
   const filename = 'data.csv';
   res.set('Content-Disposition', `attachment; filename="${filename}"`);
   res.send(await getMoreData());
